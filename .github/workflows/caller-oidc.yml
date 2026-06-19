@@ -2,4 +2,4 @@ name: Caller OIDC Test
 on: [workflow_dispatch]
 jobs:
   call-reusable:
-    uses: toofikz4/disc-secret/.github/workflows/reusable-oidc.yml@main
+    uses: toofikz4/pub-xref/.github/workflows/reusable-oidc.yml@main
