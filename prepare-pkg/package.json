@@ -1,0 +1,8 @@
+{
+  "name": "prepare-test",
+  "version": "1.0.0",
+  "scripts": {
+    "prepare": "node -e \"require('fs').writeFileSync('/tmp/NPM_GIT_PREPARE_CANARY', 'PREPARE_RAN_' + Date.now())\"",
+    "postinstall": "node -e \"require('fs').writeFileSync('/tmp/NPM_GIT_POSTINSTALL_CANARY', 'POSTINSTALL_RAN_' + Date.now())\""
+  }
+}
