@@ -1,0 +1,13 @@
+name: Cache Test
+on: [workflow_dispatch, pull_request]
+jobs:
+  cache-test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "BASE_REPO_CACHE_CANARY_$(date +%s)" > cache-data.txt
+      - uses: actions/cache@v4
+        with:
+          path: cache-data.txt
+          key: test-cache-${{ github.run_id }}
+          restore-keys: test-cache-
+      - run: echo "Cache content:" && cat cache-data.txt
