@@ -1,0 +1,28 @@
+name: OIDC Canary
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate OIDC token
+        run: |
+          if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then
+            OIDC=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange")
+            TOKEN=$(echo "$OIDC" | python3 -c "import sys,json; print(json.load(sys.stdin).get('value','NONE'))")
+            echo "OIDC Claims:"
+            echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | python3 -m json.tool 2>/dev/null || echo "decode failed"
+          else
+            echo "OIDC not available"
+          fi
+      - name: Create artifact
+        run: |
+          echo "CANARY_$(date +%s)_repo=$GITHUB_REPOSITORY" > canary.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oidc-canary
+          path: canary.txt
+          retention-days: 1
