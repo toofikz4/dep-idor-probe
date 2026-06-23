@@ -1,0 +1,5 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "postStartCommand": "echo CODESPACE-PORTFWD-CANARY-44781 > /tmp/www/canary.txt 2>/dev/null || (mkdir -p /tmp/www && echo CODESPACE-PORTFWD-CANARY-44781 > /tmp/www/canary.txt); cd /tmp/www && (nohup python3 -m http.server 8080 >/tmp/s.log 2>&1 &)",
+  "forwardPorts": [8080]
+}
