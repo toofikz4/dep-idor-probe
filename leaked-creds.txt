@@ -1,2 +1,0 @@
-AWS key: AKIAIOSFODNN7EXAMPLE / aws_secret=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-ghp_1234567890abcdefghijklmnopqrstuvwxyzAB
